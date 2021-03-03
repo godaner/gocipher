@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"crypto/rand"
 	crsa "crypto/rsa"
 	"crypto/x509"
@@ -41,9 +42,9 @@ var RSADec = cli.Command{
 			Usage:    "write the plaintext to this file.",
 			Required: false,
 		},
-		cli.BoolFlag{
+		cli.StringFlag{
 			Name:     "base64",
-			Usage:    "use base64 decode the ciphertext.",
+			Usage:    "use base64 decode the ciphertext, option is: std, url, rawstd, rawurl.",
 			Required: false,
 		},
 		cli.BoolFlag{
@@ -59,7 +60,7 @@ var RSADec = cli.Command{
 			context.String("private"),
 			context.String("prikeyfile"),
 			context.String("o"),
-			context.Bool("base64"),
+			context.String("base64"),
 			context.Bool("d")
 		logger.SetDebug(d)
 		if prikey == "" && prikeyfile == "" {
@@ -84,38 +85,26 @@ var RSADec = cli.Command{
 			text = string(bs)
 		}
 		logger.Infof("Read cipher text success, cipher text is: %v", text)
-		if base64 {
-			bs, err := base64Decode(text)
+		if base64 != "" {
+			bs, err := makeBase64(base64).DecodeString(text)
 			if err != nil {
 				return err
 			}
 			text = string(bs)
 		}
-		plainText, err := decrypt(text, prikey)
+		plainText, err := decrypt([]byte(prikey), []byte(text))
 		if err != nil {
 			return err
 		}
-		logger.Infof("Use private key decrypt success, plaintext is: %v", plainText)
+		logger.Infof("Use private key decrypt success, plaintext is: %v", string(plainText))
 		if o != "" {
-			if err := ioutil.WriteFile(o, []byte(plainText+fmt.Sprintln()), 0777); err != nil {
+			if err := ioutil.WriteFile(o, []byte(string(plainText)+fmt.Sprintln()), 0777); err != nil {
 				return err
 			}
 			logger.Infof("Save the plaintext to file success, file is: %v", o)
 		}
 		return nil
 	},
-}
-
-func decrypt(ciphertext string, private string) (string, error) {
-	prikey, err := getRsaPrivateKey([]byte(private))
-	if err != nil {
-		return "", err
-	}
-	plaintext, err := decrypto(prikey, []byte(ciphertext))
-	if err != nil {
-		return "", err
-	}
-	return string(plaintext[:]), nil
 }
 
 // getRsaPrivateKey 获取RSA私钥
@@ -129,14 +118,6 @@ func getRsaPrivateKey(data []byte) (*crsa.PrivateKey, error) {
 	return rsaprivateKey, nil
 }
 
-func decrypto(privatekey *crsa.PrivateKey, data []byte) ([]byte, error) {
-	plainText, err := crsa.DecryptPKCS1v15(rand.Reader, privatekey, data)
-	if err != nil {
-		return nil, err
-	}
-	return plainText, nil
-}
-
 // base64Decode base64解码
 func base64Decode(data string) ([]byte, error) {
 	base64er := base64.RawURLEncoding
@@ -145,4 +126,29 @@ func base64Decode(data string) ([]byte, error) {
 		return nil, err
 	}
 	return decode, nil
+}
+
+// decrypt segment decrypt
+func decrypt(privateKeyText, cipherText []byte) ([]byte, error) {
+	privateKey, err := getRsaPrivateKey(privateKeyText)
+	if err != nil {
+		return nil, err
+	}
+	keySize := privateKey.N.BitLen() / 8
+	cipherTextSize := len(cipherText)
+	var offSet = 0
+	var buffer = bytes.Buffer{}
+	for offSet < cipherTextSize {
+		endIndex := offSet + keySize
+		if endIndex > cipherTextSize {
+			endIndex = cipherTextSize
+		}
+		bytesOnce, err := crsa.DecryptPKCS1v15(rand.Reader, privateKey, cipherText[offSet:endIndex])
+		if err != nil {
+			return nil, err
+		}
+		buffer.Write(bytesOnce)
+		offSet = endIndex
+	}
+	return buffer.Bytes(), nil
 }

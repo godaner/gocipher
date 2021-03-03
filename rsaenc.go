@@ -1,10 +1,10 @@
 package main
 
 import (
+	"bytes"
 	"crypto/rand"
 	crsa "crypto/rsa"
 	"crypto/x509"
-	"encoding/base64"
 	"encoding/pem"
 	"fmt"
 	"github.com/urfave/cli"
@@ -41,9 +41,9 @@ var RSAEnc = cli.Command{
 			Usage:    "write the ciphertext to this file.",
 			Required: false,
 		},
-		cli.BoolFlag{
+		cli.StringFlag{
 			Name:     "base64",
-			Usage:    "use base64 encode the ciphertext.",
+			Usage:    "use base64 encode the ciphertext, option is: std, url, rawstd, rawurl.",
 			Required: false,
 		},
 		cli.BoolFlag{
@@ -59,7 +59,7 @@ var RSAEnc = cli.Command{
 			context.String("pubkey"),
 			context.String("pubkeyfile"),
 			context.String("o"),
-			context.Bool("base64"),
+			context.String("base64"),
 			context.Bool("d")
 		logger.SetDebug(d)
 		if pubkey == "" && pubkeyfile == "" {
@@ -84,16 +84,17 @@ var RSAEnc = cli.Command{
 			text = string(bs)
 		}
 		logger.Infof("Read cipher text success, plain text is: %v", text)
-		cipherText, err := encrypt(text, pubkey)
+		cipherText, err := encrypt([]byte(pubkey), []byte(text))
 		if err != nil {
 			return err
 		}
-		if base64 {
-			cipherText = base64Encode([]byte(cipherText))
+		if base64 != "" {
+			cipherTextS := makeBase64(base64).EncodeToString(cipherText)
+			cipherText = []byte(cipherTextS)
 		}
-		logger.Infof("Use public key encrypt success, ciphertext is: %v", cipherText)
+		logger.Infof("Use public key encrypt success, ciphertext is: %v", string(cipherText))
 		if o != "" {
-			if err := ioutil.WriteFile(o, []byte(cipherText+fmt.Sprintln()), 0777); err != nil {
+			if err := ioutil.WriteFile(o, []byte(string(cipherText)+fmt.Sprintln()), 0777); err != nil {
 				return err
 			}
 			logger.Infof("Save the ciphertext to file success, file is: %v", o)
@@ -101,18 +102,6 @@ var RSAEnc = cli.Command{
 		}
 		return nil
 	},
-}
-
-func encrypt(plaintext string, public string) (string, error) {
-	key, err := getRsaPublicKey([]byte(public))
-	if err != nil {
-		return "", err
-	}
-	ciphertext, err := encrypto(key, []byte(plaintext))
-	if err != nil {
-		return "", err
-	}
-	return string(ciphertext[:]), nil
 }
 
 // getRsaPublicKey 获取RSA公钥
@@ -127,16 +116,31 @@ func getRsaPublicKey(data []byte) (*crsa.PublicKey, error) {
 	return rsaPublicKey, nil
 }
 
-func encrypto(publickey *crsa.PublicKey, data []byte) ([]byte, error) {
-	ciphertext, err := crsa.EncryptPKCS1v15(rand.Reader, publickey, data)
+// encrypt segment encrypt
+func encrypt(publicKeyText, plaintext []byte) ([]byte, error) {
+	publicKey, err := getRsaPublicKey(publicKeyText)
 	if err != nil {
 		return nil, err
 	}
-	return ciphertext, nil
-}
+	keySize, srcSize := publicKey.N.BitLen()/8, len(plaintext)
+	// keySize, srcSize := len(publicKey.N.Bytes()), len(src)
+	// log.Println("密钥长度：", keySize, "\t明文长度：\t", srcSize)
+	// 单次加密的长度需要减掉padding的长度，PKCS1为11
+	offSet, once := 0, keySize-11
+	buffer := bytes.Buffer{}
+	for offSet < srcSize {
+		endIndex := offSet + once
+		if endIndex > srcSize {
+			endIndex = srcSize
+		}
+		// 加密一部分
+		bytesOnce, err := crsa.EncryptPKCS1v15(rand.Reader, publicKey, plaintext[offSet:endIndex])
+		if err != nil {
+			return nil, err
+		}
+		buffer.Write(bytesOnce)
+		offSet = endIndex
+	}
 
-// base64Encode base64编码
-func base64Encode(data []byte) string {
-	base64er := base64.RawURLEncoding
-	return base64er.EncodeToString(data)
+	return buffer.Bytes(), nil
 }

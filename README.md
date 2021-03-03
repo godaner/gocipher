@@ -6,10 +6,10 @@ Gocipher is a cross platform command line tool for encryption and decryption, in
     --textfile ./plaintext \
     -o ./ciphertext \
     --pubkeyfile ./publickey \
-    --base64
+    --base64 rawurl
 #### decode
     ./gocipher rsadec \
     --textfile ./ciphertext \
     -o ./plaintext \
     --prikeyfile ./privatekey \
-    --base64
+    --base64 rawurl
