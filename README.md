@@ -1,5 +1,76 @@
 # Gocipher
 Gocipher is a cross platform command line tool for encryption and decryption, including RSA.
+# Install
+To install the library, follow the classical:
+
+    $ go get github.com/godaner/gocipher
+    
+Or get it from the released version: 
+
+    https://github.com/godaner/gocipher/releases
+    
+> Note: curl -LJO https://github.com/godaner/gocipher/releases/download/v1.0.1/gocipher_linux-amd64.tar.gz, tar -zxvf gocipher_linux-amd64.tar.gz
+
+# Supported platforms
+
+This library works (and is tested) on the following platforms:
+
+<table>
+  <thead>
+    <tr>
+      <th>Platform</th>
+      <th>Architecture</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td rowspan="2">Linux</td>
+      <td><code>amd64</code></td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td><code>386</code></td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td rowspan="2">Windows</td>
+      <td><code>amd64</code></td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td><code>386</code></td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td>Others</td>
+      <td><code>Others</code></td>
+      <td>⏳</td>
+    </tr>
+  </tbody>
+</table>
+
+# Usage
+```
+$ ./gocipher
+NAME:
+   gocipher - Gocipher is a cross platform command line tool for encryption and decryption, including RSA.
+
+USAGE:
+   gocipher [global options] command [command options] [arguments...]
+
+VERSION:
+   v1.0.1
+
+COMMANDS:
+   rsaenc   encrypt by rsa
+   rsadec   decrypt by rsa
+   help, h  Shows a list of commands or help for one command
+
+GLOBAL OPTIONS:
+   --help     show help
+   --version  print the version
+```
 ## RSA
 #### encode
     ./gocipher rsaenc \
