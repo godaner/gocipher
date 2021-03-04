@@ -54,7 +54,7 @@ This library works (and is tested) on the following platforms:
 ```
 $ ./gocipher
 NAME:
-   gocipher - Gocipher is a cross platform command line tool for encryption and decryption, including RSA.
+   gocipher - Gocipher is a cross platform command line tool for encryption and decryption, including RSA, DES.
 
 USAGE:
    gocipher [global options] command [command options] [arguments...]
@@ -65,6 +65,8 @@ VERSION:
 COMMANDS:
    rsaenc   encrypt by rsa
    rsadec   decrypt by rsa
+   desenc   encrypt by des
+   desdec   decrypt by des
    help, h  Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
@@ -72,15 +74,29 @@ GLOBAL OPTIONS:
    --version  print the version
 ```
 ## RSA
-#### encode
+#### encrypt
     ./gocipher rsaenc \
     --textfile ./plaintext \
     -o ./ciphertext \
     --pubkeyfile ./publickey \
     --base64 rawurl
-#### decode
+#### decrypt
     ./gocipher rsadec \
     --textfile ./ciphertext \
     -o ./plaintext \
     --prikeyfile ./privatekey \
+    --base64 rawurl
+    
+## DES
+#### encrypt
+    ./gocipher desenc \
+    --textfile ./desplaintext \
+    -o ./desciphertext \
+    --key 12345678 \
+    --base64 rawurl
+#### decrypt
+    ./gocipher desdec \
+    --textfile ./desciphertext \
+    -o ./desplaintext \
+    --key 12345678 \
     --base64 rawurl
