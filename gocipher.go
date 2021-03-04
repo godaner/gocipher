@@ -25,6 +25,8 @@ func main() {
 	app.Commands = []cli.Command{
 		RSAEnc,
 		RSADec,
+		DESEnc,
+		DESDec,
 	}
 	if err := app.Run(os.Args); err != nil {
 		logger.Error(err)

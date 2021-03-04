@@ -83,7 +83,7 @@ var RSAEnc = cli.Command{
 			}
 			text = string(bs)
 		}
-		logger.Infof("Read cipher text success, plain text is: %v", text)
+		logger.Infof("Read plain text success, plain text is: %v", text)
 		cipherText, err := encrypt([]byte(pubkey), []byte(text))
 		if err != nil {
 			return err

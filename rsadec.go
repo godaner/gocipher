@@ -57,7 +57,7 @@ var RSADec = cli.Command{
 		text, textfile, prikey, prikeyfile, o, base64, d :=
 			context.String("text"),
 			context.String("textfile"),
-			context.String("private"),
+			context.String("prikey"),
 			context.String("prikeyfile"),
 			context.String("o"),
 			context.String("base64"),
