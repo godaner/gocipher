@@ -21,7 +21,7 @@ func main() {
 	app.Name = "gocipher"
 	app.HelpName = "gocipher"
 	app.Usage = "Gocipher is a cross platform command line tool for encryption and decryption, including RSA, DES."
-	app.Version = "v1.0.2"
+	app.Version = "v1.0.3"
 	app.Commands = []cli.Command{
 		RSAEnc,
 		RSADec,
