@@ -20,11 +20,13 @@ func main() {
 	app.ErrWriter = os.Stderr
 	app.Name = "gocipher"
 	app.HelpName = "gocipher"
-	app.Usage = "Gocipher is a cross platform command line tool for encryption and decryption, including RSA."
-	app.Version = "v1.0.1"
+	app.Usage = "Gocipher is a cross platform command line tool for encryption and decryption, including RSA, DES."
+	app.Version = "v1.0.2"
 	app.Commands = []cli.Command{
 		RSAEnc,
 		RSADec,
+		DESEnc,
+		DESDec,
 	}
 	if err := app.Run(os.Args); err != nil {
 		logger.Error(err)

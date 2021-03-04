@@ -7,6 +7,7 @@ import (
 	"crypto/x509"
 	"encoding/base64"
 	"encoding/pem"
+	"errors"
 	"fmt"
 	"github.com/urfave/cli"
 	"io/ioutil"
@@ -57,7 +58,7 @@ var RSADec = cli.Command{
 		text, textfile, prikey, prikeyfile, o, base64, d :=
 			context.String("text"),
 			context.String("textfile"),
-			context.String("private"),
+			context.String("prikey"),
 			context.String("prikeyfile"),
 			context.String("o"),
 			context.String("base64"),
@@ -110,12 +111,15 @@ var RSADec = cli.Command{
 // getRsaPrivateKey 获取RSA私钥
 func getRsaPrivateKey(data []byte) (*crsa.PrivateKey, error) {
 	block, _ := pem.Decode(data)
-	key, err := x509.ParsePKCS1PrivateKey(block.Bytes)
-	if err != nil {
-		return nil, err
+	private1KeyInterface, err := x509.ParsePKCS1PrivateKey(block.Bytes)
+	if err == nil {
+		return private1KeyInterface, nil
 	}
-	rsaprivateKey := key
-	return rsaprivateKey, nil
+	private8KeyInterface, err1 := x509.ParsePKCS8PrivateKey(block.Bytes)
+	if err1 == nil {
+		return private8KeyInterface.(*crsa.PrivateKey), nil
+	}
+	return nil, errors.New(err.Error() + " and " + err1.Error())
 }
 
 // base64Decode base64解码

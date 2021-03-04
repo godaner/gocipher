@@ -6,6 +6,7 @@ import (
 	crsa "crypto/rsa"
 	"crypto/x509"
 	"encoding/pem"
+	"errors"
 	"fmt"
 	"github.com/urfave/cli"
 	"io/ioutil"
@@ -83,7 +84,7 @@ var RSAEnc = cli.Command{
 			}
 			text = string(bs)
 		}
-		logger.Infof("Read cipher text success, plain text is: %v", text)
+		logger.Infof("Read plain text success, plain text is: %v", text)
 		cipherText, err := encrypt([]byte(pubkey), []byte(text))
 		if err != nil {
 			return err
@@ -107,13 +108,15 @@ var RSAEnc = cli.Command{
 // getRsaPublicKey 获取RSA公钥
 func getRsaPublicKey(data []byte) (*crsa.PublicKey, error) {
 	block, _ := pem.Decode(data)
-	var cert *x509.Certificate
 	cert, err := x509.ParseCertificate(block.Bytes)
-	if err != nil {
-		return nil, err
+	if err == nil {
+		return cert.PublicKey.(*crsa.PublicKey), nil
 	}
-	rsaPublicKey := cert.PublicKey.(*crsa.PublicKey)
-	return rsaPublicKey, nil
+	publicKeyInterface, err1 := x509.ParsePKIXPublicKey(block.Bytes)
+	if err1 == nil {
+		return publicKeyInterface.(*crsa.PublicKey), nil
+	}
+	return nil, errors.New(err.Error() + " and " + err1.Error())
 }
 
 // encrypt segment encrypt
