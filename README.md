@@ -104,3 +104,12 @@ GLOBAL OPTIONS:
     -o ./desplaintext \
     --key 12345678 \
     --base64 rawurl
+## BASE64
+#### encrypt
+    ./gocipher base64enc --text godaner
+#### decrypt
+    ./gocipher base64dec --text Z29kYW5lcg==
+## MD5
+    ./gocipher md5 --text godaner
+## SHA256
+    ./gocipher sha256 --text godaner
