@@ -1,5 +1,5 @@
 # Gocipher
-Gocipher is a cross platform command line tool for encryption and decryption, including RSA.
+Gocipher is a cross platform command line tool for encryption and decryption, including RSA, DES, BASE64, MD5, SHA256.
 # Install
 To install the library, follow the classical:
 
@@ -54,7 +54,7 @@ This library works (and is tested) on the following platforms:
 ```
 $ ./gocipher
 NAME:
-   gocipher - Gocipher is a cross platform command line tool for encryption and decryption, including RSA, DES.
+   gocipher - Gocipher is a cross platform command line tool for encryption and decryption, including RSA, DES, BASE64, MD5, SHA256.
 
 USAGE:
    gocipher [global options] command [command options] [arguments...]
@@ -63,11 +63,15 @@ VERSION:
    v1.0.3
 
 COMMANDS:
-   rsaenc   encrypt by rsa
-   rsadec   decrypt by rsa
-   desenc   encrypt by des
-   desdec   decrypt by des
-   help, h  Shows a list of commands or help for one command
+   rsaenc     encrypt by rsa
+   rsadec     decrypt by rsa
+   desenc     encrypt by des
+   desdec     decrypt by des
+   base64enc  encrypt by base64
+   base64dec  decrypt by base64
+   md5        md5
+   sha256     sha256
+   help, h    Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
    --help     show help
