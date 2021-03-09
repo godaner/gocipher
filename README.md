@@ -9,7 +9,7 @@ Or get it from the released version:
 
     https://github.com/godaner/gocipher/releases
     
-> Note: curl -LJO https://github.com/godaner/gocipher/releases/download/v1.0.3/gocipher_linux-amd64.tar.gz, tar -zxvf gocipher_linux-amd64.tar.gz
+> Note: curl -LJO https://github.com/godaner/gocipher/releases/download/v1.0.4/gocipher_linux-amd64.tar.gz, tar -zxvf gocipher_linux-amd64.tar.gz
 
 # Supported platforms
 
@@ -60,7 +60,7 @@ USAGE:
    gocipher [global options] command [command options] [arguments...]
 
 VERSION:
-   v1.0.3
+   v1.0.4
 
 COMMANDS:
    rsaenc     encrypt by rsa
