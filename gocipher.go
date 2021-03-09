@@ -20,13 +20,15 @@ func main() {
 	app.ErrWriter = os.Stderr
 	app.Name = "gocipher"
 	app.HelpName = "gocipher"
-	app.Usage = "Gocipher is a cross platform command line tool for encryption and decryption, including RSA, DES, BASE64, MD5, SHA256."
+	app.Usage = "Gocipher is a cross platform command line tool for encryption and decryption, including RSA, DES, AES, BASE64, MD5, SHA256."
 	app.Version = "v1.0.4"
 	app.Commands = []cli.Command{
 		RSAEnc,
 		RSADec,
 		DESEnc,
 		DESDec,
+		AESEnc,
+		AESDec,
 		BASE64Enc,
 		BASE64Dec,
 		Md5,

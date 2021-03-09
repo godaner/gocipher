@@ -1,10 +1,22 @@
 package main
 
-import "github.com/wumansgy/goEncrypt"
+import (
+	"errors"
+	"github.com/wumansgy/goEncrypt"
+)
+
+var (
+	ErrCipherTextTooShort = errors.New("ciphertext too short")
+)
+
+type desCipher interface {
+	encrypt(plainText, key []byte, ivDes ...byte) ([]byte, error)
+	decrypt(cipherText, key []byte, ivDes ...byte) ([]byte, error)
+}
 
 func makeDESCipher(mode string) desCipher {
 	switch mode {
-	case "", "cbc":
+	case "cbc":
 		return &cbcDESCipher{}
 	case "3", "triple":
 		return &tripleDESCipher{}
@@ -13,10 +25,6 @@ func makeDESCipher(mode string) desCipher {
 	}
 }
 
-type desCipher interface {
-	encrypt(plainText, key []byte, ivDes ...byte) ([]byte, error)
-	decrypt(cipherText, key []byte, ivDes ...byte) ([]byte, error)
-}
 type tripleDESCipher struct {
 }
 

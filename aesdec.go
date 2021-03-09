@@ -6,10 +6,10 @@ import (
 	"io/ioutil"
 )
 
-var DESDec = cli.Command{
-	Name:      "desdec",
-	Usage:     "decrypt by des",
-	UsageText: "Usage: gocipher desdec [options...]",
+var AESDec = cli.Command{
+	Name:      "aesdec",
+	Usage:     "decrypt by aes",
+	UsageText: "Usage: gocipher aesdec [options...]",
 	Flags: []cli.Flag{
 		cli.StringFlag{
 			Name:     "text",
@@ -38,7 +38,7 @@ var DESDec = cli.Command{
 		},
 		cli.StringFlag{
 			Name:     "m",
-			Usage:    "des mode, option is: cbc, triple.",
+			Usage:    "aes mode, option is: cbc, triple.",
 			Required: false,
 			Value:    "cbc",
 		},
@@ -93,7 +93,7 @@ var DESDec = cli.Command{
 			}
 			text = string(bs)
 		}
-		plainText, err := makeDESCipher(m).decrypt([]byte(text), []byte(key))
+		plainText, err := makeAESCipher(m).decrypt([]byte(text), []byte(key))
 		if err != nil {
 			return err
 		}

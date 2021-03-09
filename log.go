@@ -1,13 +1,14 @@
 package main
 
 import (
-	"github.com/godaner/gocipher/log"
+	mlog "github.com/godaner/gocipher/log"
 	"github.com/godaner/gocipher/log/logv1"
 	"io/ioutil"
+	"log"
 	"os"
 )
 
-var logger log.Logger
+var logger mlog.Logger
 
 func initLogger(debug bool) {
 	logger = &logv1.LoggerV1{
@@ -17,4 +18,5 @@ func initLogger(debug bool) {
 		ErrorWriter: os.Stderr,
 	}
 	logger.SetDebug(debug)
+	log.SetFlags(0)
 }
